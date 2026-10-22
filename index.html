@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Antes o Después · Fútbol</title>
+    <meta name="description" content="Ubicá en la línea de tiempo los grandes momentos del fútbol argentino. Una partida nueva cada día." />
+    <meta name="theme-color" content="#F5F5F4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)" />
+    <meta property="og:title" content="Antes o Después · Fútbol" />
+    <meta property="og:description" content="¿Cuándo pasó? Ordená la historia del fútbol argentino." />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700;800&display=swap" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="top">
+        <div class="logo"><small>Fútbol argentino</small><b>Antes o <span>después</span></b></div>
+        <div class="score" aria-live="polite"><b id="s-score">0</b><span id="s-max">/36</span></div>
+        <button class="icon" id="help" aria-label="Cómo se juega">?</button>
+      </header>
+      <div class="bar2">
+        <div class="tabs" role="group" aria-label="Modo de juego">
+          <button id="tab-daily" aria-pressed="true">Del día</button>
+          <button id="tab-free" aria-pressed="false">Libre</button>
+        </div>
+        <div class="dots" id="dots" aria-label="Progreso"></div>
+      </div>
+      <div class="chips" id="free" hidden></div>
+      <main class="stage">
+        <div class="track" id="track"><div class="board" id="board" aria-label="Línea de tiempo"></div></div>
+        <p class="hint" id="hint" hidden>Deslizá la línea para ver todos los años</p>
+      </main>
+      <section class="dock" id="dock"></section>
+    </div>
+
+    <div class="sheet" id="sheet" hidden>
+      <div class="panel" role="dialog" aria-modal="true" aria-labelledby="h-title">
+        <h2 id="h-title">Cómo se juega</h2>
+        <ol class="steps">
+          <li><span><b>Leé el momento de abajo.</b>Tenés que adivinar en qué año pasó.</span></li>
+          <li><span><b>Arrastralo hasta la línea de tiempo.</b>Soltalo en el hueco donde creés que va.</span></li>
+          <li><span><b>Si le errás, probá de nuevo.</b>Te decimos para qué lado moverlo.</span></li>
+          <li><span><b>Tocá cualquier carta</b>para leer más sobre ese momento.</span></li>
+        </ol>
+        <div class="pts">Cada día hay una partida nueva. El evento #1 vale 1 punto, el #2 vale 2… hasta el #8. Cada error resta 1 (nunca menos de 0). Máximo: 36.</div>
+        <button class="go" id="close-help">¡A jugar!</button>
+      </div>
+    </div>
+    <div class="sheet" id="info" hidden><div class="panel" role="dialog" aria-modal="true" id="info-card"></div></div>
+    <div class="toast" id="toast"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

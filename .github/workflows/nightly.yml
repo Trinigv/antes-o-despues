@@ -1,0 +1,83 @@
+name: Nightly
+
+# Todas las noches (03:00 de Argentina):
+#  1. Genera las partidas de los próximos 30 días y las commitea directo a main.
+#  2. Busca eventos nuevos y abre un PR para revisarlos.
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+    inputs:
+      since:
+        description: "Buscar eventos desde este año"
+        required: false
+        default: ""
+      max:
+        description: "Máximo de cartas nuevas"
+        required: false
+        default: "8"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  puzzles:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run puzzles
+      - run: npm run validate
+      - name: Commit de partidas nuevas
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/puzzles
+          git diff --cached --quiet || git commit -m "Partidas del día generadas automáticamente"
+          git push
+      # Los pushes del bot no disparan otros workflows: sincronizamos acá (fase 2, si está configurada)
+      - name: Sincronizar con Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npm run sync
+
+  ingest:
+    runs-on: ubuntu-latest
+    needs: puzzles
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Ingesta (Wikidata + inbox + Claude)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+        run: |
+          ARGS="--max ${{ github.event.inputs.max || '8' }}"
+          if [ -n "${{ github.event.inputs.since }}" ]; then ARGS="$ARGS --since ${{ github.event.inputs.since }}"; fi
+          npm run ingest -- $ARGS
+      - run: npm run validate
+      - name: Abrir PR con las cartas nuevas
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: ingesta/nocturna
+          delete-branch: true
+          title: "Cartas nuevas de la ingesta"
+          body-path: .ingest-summary.md
+          commit-message: "Ingesta: cartas nuevas"
+          add-paths: |
+            data/events.json
+            data/inbox.md
+            data/ingest-state.json
+          labels: ingesta

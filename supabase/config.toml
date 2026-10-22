@@ -1,0 +1,6 @@
+# Configuración mínima para `supabase functions deploy`.
+project_id = "antes-o-despues-futbol"
+
+[functions.api]
+# La API es pública (la usa el navegador sin login)
+verify_jwt = false
