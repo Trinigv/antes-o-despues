@@ -2736,6 +2736,20 @@
     "status": "approved"
   },
   {
+    "id": "2024-seleccion-de-futbol-de-argentina-gano-la-compete",
+    "year": 2024,
+    "date": "2024-07-14",
+    "precision": "day",
+    "category": "clu",
+    "title": "selección de fútbol de Argentina ganó la competencia \"Copa América\"",
+    "description": "",
+    "tags": [
+      "ingesta"
+    ],
+    "source": "http://www.wikidata.org/entity/Q16481624",
+    "status": "pending"
+  },
+  {
     "id": "2024-racing-gana-la-copa-sudamericana",
     "year": 2024,
     "date": "2024-11-23",
